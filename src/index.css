@@ -1,0 +1,43 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+@layer components {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    /* 水平滚动条高度（即宽度） */
+    /* Y 轴滚动条宽度 */
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #555;
+    /* Y 轴滚动条轨道背景 */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #0acaff;
+    /* Y 轴滚动条滑块颜色 */
+    /* Y 轴滚动条滑块圆角 */
+    border: 1px solid #383b45;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #0acaff;
+    /* Y 轴滚动条滑块悬停颜色 */
+  }
+}
+
+.markBorderR {
+  border: 1px solid red;
+}
+
+.markBorderG {
+  border: 1px solid rgb(0, 234, 150);
+}
+
+.selected {
+  border: 3px solid rgb(0, 234, 150);
+}
