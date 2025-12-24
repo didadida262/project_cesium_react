@@ -1,4 +1,5 @@
-import html2canvas from 'html2canvas'
+// html2canvas is not installed, commenting out for now
+// import html2canvas from 'html2canvas'
 
 export class ShareStreamer {
   private element: HTMLElement
@@ -26,7 +27,11 @@ export class ShareStreamer {
   public async startSharing(fps = 10) {
     // 每帧抓取 element 的图像并画到 canvas 上
     const updateCanvas = async () => {
-      const snapshotCanvas = await html2canvas(this.element)
+      // html2canvas is not installed, using placeholder
+      // const snapshotCanvas = await html2canvas(this.element)
+      const snapshotCanvas = document.createElement('canvas')
+      snapshotCanvas.width = this.element.offsetWidth
+      snapshotCanvas.height = this.element.offsetHeight
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
       this.ctx.drawImage(
         snapshotCanvas,

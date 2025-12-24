@@ -85,7 +85,7 @@ export default class DrawTool {
     ) //用于区分多个相同箭头时
   }
 
-  private _registerEvents(callback?: Function): void {
+  private _registerEvents(_callback?: Function): void {
     this._drawHandler = new Cesium.ScreenSpaceEventHandler(
       this.viewer.scene.canvas,
     )
@@ -95,7 +95,11 @@ export default class DrawTool {
     this._rightClickEvent()
   }
 
-  private _removeAllEvent(): void {
+  /**
+   * 移除所有鼠标事件
+   * @internal
+   */
+  public _removeAllEvent(): void {
     if (this._drawHandler) {
       this._drawHandler.removeInputAction(
         Cesium.ScreenSpaceEventType.LEFT_CLICK,
@@ -125,8 +129,8 @@ export default class DrawTool {
     return result
   }
 
-  public activate(drawType: string, callback?: Function): void {
-    this._registerEvents(callback)
+  public activate(_drawType: string, _callback?: Function): void {
+    this._registerEvents()
   }
 
   private showArrowOnMap(positions: Cesium.Cartesian3[]): Cesium.Entity {

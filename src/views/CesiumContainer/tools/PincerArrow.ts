@@ -30,12 +30,7 @@ interface DrawToolOptions {
   pointImageUrl?: string;
 }
 
-interface CustomEntity extends Cesium.Entity {
-  wz: number;
-  attr?: string;
-  type?: string;
-  position: Cesium.ConstantPositionProperty;
-}
+// CustomEntity interface removed as it's not used
 
 export default class DrawTool {
   public name: string
@@ -57,7 +52,7 @@ export default class DrawTool {
   pointArr: any[]
   objId: number
 
-  constructor(viewer: Cesium.Viewer, options?: DrawToolOptions) {
+  constructor(viewer: Cesium.Viewer, _options?: DrawToolOptions) {
     this.name = 'PincerArrow'
     this.viewer = viewer
     this._drawHandler = null
@@ -66,7 +61,7 @@ export default class DrawTool {
 
     this.positions = []
     this.pointImageUrl = '/images/point.png'
-    this.fillMaterial = Cesium.Color.RED.withAlpha(0.8)
+    this.fillMaterial = _options?.fillMaterial || Cesium.Color.RED.withAlpha(0.8)
     this.outlineMaterial = new Cesium.PolylineDashMaterialProperty({
       dashLength: 16,
       color: Cesium.Color.fromCssColorString('#f00').withAlpha(0.7),
@@ -84,7 +79,7 @@ export default class DrawTool {
     ) //用于区分多个相同箭头时
   }
 
-  private _registerEvents(callback?: Function): void {
+  private _registerEvents(_callback?: Function): void {
     this._drawHandler = new Cesium.ScreenSpaceEventHandler(
       this.viewer.scene.canvas,
     )
@@ -93,7 +88,11 @@ export default class DrawTool {
     this._mouseMoveEvent()
   }
 
-  private _removeAllEvent(): void {
+  /**
+   * 移除所有鼠标事件
+   * @internal
+   */
+  public _removeAllEvent(): void {
     if (this._drawHandler) {
       this._drawHandler.removeInputAction(
         Cesium.ScreenSpaceEventType.LEFT_CLICK,
@@ -123,8 +122,8 @@ export default class DrawTool {
     return result
   }
 
-  public activate(drawType: string, callback?: Function): void {
-    this._registerEvents(callback)
+  public activate(_drawType: string, _callback?: Function): void {
+    this._registerEvents()
   }
 
   private showArrowOnMap(positions: Cesium.Cartesian3[]): Cesium.Entity {

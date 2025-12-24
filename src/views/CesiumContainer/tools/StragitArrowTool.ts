@@ -1,5 +1,5 @@
 import * as Cesium from 'cesium'
-import ms from 'milsymbol'
+// import ms from 'milsymbol' // Not used currently
 import { getCatesian3FromPX, cartesianToLatlng } from '../CesiumUtils'
 import { xp } from './drawArrow/algorithm'
 
@@ -40,7 +40,6 @@ export default class DrawTool {
   public viewer: Cesium.Viewer
   private _drawHandler: Cesium.ScreenSpaceEventHandler | null
   private _drawnEntities: Cesium.Entity[]
-  private _tempPositions: Cesium.Cartesian3[]
   public temppath: any
   public fillMaterial: Cesium.Color
   public firstPoint: CustomEntity | null
@@ -54,7 +53,6 @@ export default class DrawTool {
     this.viewer = viewer
     this._drawHandler = null
     this._drawnEntities = []
-    this._tempPositions = []
     this.temppath = null
     this.fillMaterial =
       options?.fillMaterial || Cesium.Color.RED.withAlpha(0.5)
@@ -65,7 +63,7 @@ export default class DrawTool {
     this.pointImageUrl = options?.pointImageUrl
   }
 
-  private _registerEvents(callback?: Function): void {
+  private _registerEvents(_callback?: Function): void {
     this._drawHandler = new Cesium.ScreenSpaceEventHandler(
       this.viewer.scene.canvas,
     )
@@ -74,7 +72,11 @@ export default class DrawTool {
     this._mouseMoveEventForPolyline()
   }
 
-  private _removeAllEvent(): void {
+  /**
+   * 移除所有鼠标事件
+   * @internal
+   */
+  public _removeAllEvent(): void {
     if (this._drawHandler) {
       this._drawHandler.removeInputAction(
         Cesium.ScreenSpaceEventType.LEFT_CLICK,
@@ -104,8 +106,8 @@ export default class DrawTool {
     return result
   }
 
-  public activate(drawType: string, callback?: Function): void {
-    this._registerEvents(callback)
+  public activate(_drawType: string, _callback?: Function): void {
+    this._registerEvents()
   }
 
   private showArrowOnMap(positions: Cesium.Cartesian3[]): Cesium.Entity {

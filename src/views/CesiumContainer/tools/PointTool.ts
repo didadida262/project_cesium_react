@@ -26,18 +26,17 @@ export default class DrawTool {
 
   /**
    * 激活绘制工具
-   * @param drawType 绘制类型（未使用）
-   * @param callback 回调函数（未使用）
+   * @param _drawType 绘制类型（未使用）
+   * @param _callback 回调函数（未使用）
    */
-  activate(drawType?: string, callback?: () => void): void {
-    this._registerEvents(callback) // 注册鼠标事件
+  activate(_drawType?: string, _callback?: () => void): void {
+    this._registerEvents() // 注册鼠标事件
   }
 
   /**
    * 注册鼠标事件
-   * @param callback 回调函数（未使用）
    */
-  private _registerEvents(callback?: () => void): void {
+  private _registerEvents(): void {
     this._drawHandler = new Cesium.ScreenSpaceEventHandler(
       this.viewer.scene.canvas,
     )
@@ -94,8 +93,9 @@ export default class DrawTool {
 
   /**
    * 移除所有鼠标事件
+   * @internal
    */
-  private _removeAllEvent(): void {
+  public _removeAllEvent(): void {
     if (this._drawHandler) {
       this._drawHandler.removeInputAction(
         Cesium.ScreenSpaceEventType.LEFT_CLICK,
