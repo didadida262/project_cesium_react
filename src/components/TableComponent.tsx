@@ -84,6 +84,6 @@ const TableComponent: React.FC<TableComponentProps> = ({
       `}</style>
     </div>
   )
-}
+} as React.FC<TableComponentProps>
 
 export default TableComponent

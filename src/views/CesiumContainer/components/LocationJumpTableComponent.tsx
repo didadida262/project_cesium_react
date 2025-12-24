@@ -7,10 +7,10 @@ interface LocationJumpTableComponentProps {
   onClick: (data: any) => void
 }
 
-const LocationJumpTableComponent: React.FC<LocationJumpTableComponentProps> = ({
+const LocationJumpTableComponent = ({
   data,
-  color,
-  lightColor,
+  color: _color,
+  lightColor: _lightColor,
   onClick,
 }) => {
   const [selectedItem, setSelectedItem] = useState<any>(null)
@@ -80,4 +80,4 @@ const LocationJumpTableComponent: React.FC<LocationJumpTableComponentProps> = ({
   )
 }
 
-export default LocationJumpTableComponent
+export default LocationJumpTableComponent as React.FC<LocationJumpTableComponentProps>

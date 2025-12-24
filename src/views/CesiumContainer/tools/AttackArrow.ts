@@ -41,7 +41,6 @@ export default class DrawTool {
   public viewer: Cesium.Viewer
   private _drawHandler: Cesium.ScreenSpaceEventHandler | null
   private _drawnEntities: Cesium.Entity[]
-  private _tempPositions: Cesium.Cartesian3[]
   public temppath: any
   public fillMaterial: Cesium.Color
   public firstPoint: CustomEntity | null
@@ -57,17 +56,16 @@ export default class DrawTool {
   pointArr: any[]
   objId: number
 
-  constructor(viewer: Cesium.Viewer, options?: DrawToolOptions) {
+  constructor(viewer: Cesium.Viewer, _options?: DrawToolOptions) {
     this.name = 'AttackArrow'
     this.viewer = viewer
     this._drawHandler = null
     this._drawnEntities = []
-    this._tempPositions = []
     this.temppath = null
 
     this.positions = []
     this.pointImageUrl = '/images/point.png'
-    this.fillMaterial = Cesium.Color.RED.withAlpha(0.5)
+    this.fillMaterial = _options?.fillMaterial || Cesium.Color.RED.withAlpha(0.5)
     this.outlineMaterial = new Cesium.PolylineDashMaterialProperty({
       dashLength: 16,
       color: Cesium.Color.fromCssColorString('#f00').withAlpha(0.7),

@@ -15,7 +15,7 @@ import MarkContainer from './components/MarkContainer'
 import LocationJumpContainer from './components/LocationJumpContainer'
 import ConfigContainer from './components/ConfigContainer'
 
-const CesiumMap: React.FC = () => {
+const CesiumMap = () => {
   const [currenModel, setCurrenModel] = useState('')
   const operationPanelRef = useRef<HTMLDivElement>(null)
   const cesiumContainerRef = useRef<HTMLDivElement>(null)
@@ -359,4 +359,4 @@ const CesiumMap: React.FC = () => {
   )
 }
 
-export default CesiumMap
+export default CesiumMap as React.FC

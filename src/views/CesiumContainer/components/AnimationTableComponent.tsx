@@ -9,8 +9,8 @@ interface AnimationTableComponentProps {
 
 const AnimationTableComponent: React.FC<AnimationTableComponentProps> = ({
   data,
-  color,
-  lightColor,
+  color: _color,
+  lightColor: _lightColor,
   onClick,
 }) => {
   const [selectedItem, setSelectedItem] = useState<any>(null)
@@ -82,6 +82,6 @@ const AnimationTableComponent: React.FC<AnimationTableComponentProps> = ({
       `}</style>
     </div>
   )
-}
+} as React.FC<AnimationTableComponentProps>
 
 export default AnimationTableComponent
