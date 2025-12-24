@@ -83,25 +83,41 @@ export class CesiumController {
     showExplosionEffect = false,
     explosionPosition?: Cesium.Cartesian3,
   ) {
-    if (!this.viewer) return
-    const destination: LonLatType = getLonLat(position)
-    // 使用flyTo定位
-    this.viewer.camera.flyTo({
-      destination: Cesium.Cartesian3.fromDegrees(
-        destination.longitude,
-        destination.latitude,
+    if (!this.viewer) {
+      console.error('Cesium viewer is not initialized')
+      return
+    }
+    if (!position) {
+      console.error('Position is invalid')
+      return
+    }
+    try {
+      const destination: LonLatType = getLonLat(position)
+      console.log('Flying to location:', {
+        longitude: destination.longitude,
+        latitude: destination.latitude,
         height,
-      ),
-      orientation: {
-        heading: Cesium.Math.toRadians(0), // 朝向
-        pitch: Cesium.Math.toRadians(-80), // 俯仰角
-        roll: 0.0,
-      },
-      duration: 2, // 飞行时间(秒)
-    })
-    // 如果需要显示爆炸效果
-    if (showExplosionEffect) {
-      showExplosion(this.viewer, explosionPosition || position)
+      })
+      // 使用flyTo定位
+      this.viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(
+          destination.longitude,
+          destination.latitude,
+          height,
+        ),
+        orientation: {
+          heading: Cesium.Math.toRadians(0), // 朝向
+          pitch: Cesium.Math.toRadians(-80), // 俯仰角
+          roll: 0.0,
+        },
+        duration: 2, // 飞行时间(秒)
+      })
+      // 如果需要显示爆炸效果
+      if (showExplosionEffect) {
+        showExplosion(this.viewer, explosionPosition || position)
+      }
+    } catch (error) {
+      console.error('Error in flyToLocation:', error)
     }
   }
 

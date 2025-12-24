@@ -119,6 +119,7 @@ const CesiumMap: React.FC = () => {
   }
 
   const handleSelectLocation = (item: any) => {
+    console.log('handleSelectLocation called with item:', item)
     // 位置配置映射表
     const locationConfig: Record<
       string,
@@ -143,12 +144,15 @@ const CesiumMap: React.FC = () => {
 
     const config = locationConfig[item.key]
     if (config) {
+      console.log('Found config for key:', item.key, config)
       CesiumController.flyToLocation(
         config.position,
         config.height,
         config.showExplosion || false,
         config.explosionPosition,
       )
+    } else {
+      console.warn('No config found for key:', item.key)
     }
   }
 
@@ -179,7 +183,7 @@ const CesiumMap: React.FC = () => {
   }, [])
 
   return (
-    <div className="w-full h-full relative text-[white]">
+    <div className="w-full h-full relative text-[white] overflow-hidden">
       <div
         ref={operationPanelRef}
         className={`

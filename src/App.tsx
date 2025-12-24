@@ -4,7 +4,7 @@ import CesiumContainer from './views/CesiumContainer'
 
 function App() {
   return (
-    <div className="w-screen h-screen">
+    <div className="w-screen h-screen overflow-hidden">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<CesiumContainer />} />

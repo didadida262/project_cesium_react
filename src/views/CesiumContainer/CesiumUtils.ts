@@ -53,7 +53,7 @@ export const getLonLat = (cartesian: Cesium.Cartesian3) => {
   const position = Cesium.Cartographic.fromCartesian(cartesian)
   const longitude = Cesium.Math.toDegrees(position.longitude)
   const latitude = Cesium.Math.toDegrees(position.latitude)
-  const height = Cesium.Math.toDegrees(position.height)
+  const height = position.height // height 已经是米为单位，不需要转换为度
   return {
     longitude,
     latitude,

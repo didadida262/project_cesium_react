@@ -3,7 +3,7 @@ import CesiumMap from './CesiumMap'
 
 const CesiumContainer: React.FC = () => {
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full overflow-hidden">
       <CesiumMap />
     </div>
   )
