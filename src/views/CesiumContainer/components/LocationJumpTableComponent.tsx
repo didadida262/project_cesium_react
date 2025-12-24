@@ -7,7 +7,7 @@ interface LocationJumpTableComponentProps {
   onClick: (data: any) => void
 }
 
-const LocationJumpTableComponent = ({
+const LocationJumpTableComponent: React.FC<LocationJumpTableComponentProps> = ({
   data,
   color: _color,
   lightColor: _lightColor,
@@ -80,4 +80,4 @@ const LocationJumpTableComponent = ({
   )
 }
 
-export default LocationJumpTableComponent as React.FC<LocationJumpTableComponentProps>
+export default LocationJumpTableComponent

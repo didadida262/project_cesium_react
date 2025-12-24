@@ -82,6 +82,6 @@ const AnimationTableComponent: React.FC<AnimationTableComponentProps> = ({
       `}</style>
     </div>
   )
-} as React.FC<AnimationTableComponentProps>
+}
 
 export default AnimationTableComponent

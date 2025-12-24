@@ -64,7 +64,7 @@ const getIconComponent = (key: string) => {
   return iconMap[key] || <span>{key}</span>
 }
 
-const MarkTableComponent = ({
+const MarkTableComponent: React.FC<MarkTableComponentProps> = ({
   data,
   color: _color,
   lightColor: _lightColor,
@@ -143,4 +143,4 @@ const MarkTableComponent = ({
   )
 }
 
-export default MarkTableComponent as React.FC<MarkTableComponentProps>
+export default MarkTableComponent
