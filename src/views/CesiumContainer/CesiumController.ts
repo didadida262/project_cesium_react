@@ -19,9 +19,25 @@ export class CesiumController {
   static chinaBorderDataSource: Cesium.GeoJsonDataSource | null = null
 
   static remove() {
-    this.drawTool && this.drawTool._removeAllEvent()
+    if (this.drawTool && typeof this.drawTool._removeAllEvent === 'function') {
+      this.drawTool._removeAllEvent()
+    }
   }
   static init_world(containerId: string) {
+    // 检查容器是否存在
+    const container = document.getElementById(containerId)
+    if (!container) {
+      console.error(`Container element with id "${containerId}" not found`)
+      return
+    }
+    
+    // 如果已经初始化过，先销毁旧的 viewer
+    if (this.viewer) {
+      console.warn('Cesium viewer already initialized, destroying old instance')
+      this.viewer.destroy()
+      this.viewer = null as any
+    }
+    
     // Cesium.Ion.defaultAccessToken =
     //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhMTQ4ZmRhMS00MjY3LTRlZTgtOGU3Yi01OTY4NTEwN2NkYzciLCJpZCI6Mjk0MTEyLCJpYXQiOjE3NDQ2ODU2OTd9.yMNzVcVvq9NI2sXWePenGj5ZJbshJqiGqctlNlDWEDA";
 
@@ -48,23 +64,30 @@ export class CesiumController {
       maximumLevel: 18,
     })
 
-    this.viewer = new Cesium.Viewer(containerId, {
-      selectionIndicator: false, // 禁用选择指示器
-      infoBox: false, // 禁用右侧信息面板
-      imageryProvider: imageryProviderV1,
+    try {
+      this.viewer = new Cesium.Viewer(containerId, {
+        selectionIndicator: false, // 禁用选择指示器
+        infoBox: false, // 禁用右侧信息面板
+        imageryProvider: imageryProviderV1,
 
-      timeline: false, // 是否显示时间线控件
-      baseLayerPicker: false,
-      animation: false, // 可选：关闭动画控件
-      shouldAnimate: true,
-    });
+        timeline: false, // 是否显示时间线控件
+        baseLayerPicker: false,
+        animation: false, // 可选：关闭动画控件
+        shouldAnimate: true,
+      });
 
-    // 去除logo
-    (this.viewer.cesiumWidget.creditContainer as HTMLElement).style.display =
-      'none'
-    // 显示帧率
-    this.viewer.scene.debugShowFramesPerSecond = true;
-    (window as any).viewer = this.viewer
+      // 去除logo
+      (this.viewer.cesiumWidget.creditContainer as HTMLElement).style.display =
+        'none'
+      // 显示帧率
+      this.viewer.scene.debugShowFramesPerSecond = true;
+      (window as any).viewer = this.viewer
+      
+      console.log('Cesium viewer created successfully')
+    } catch (error) {
+      console.error('Error creating Cesium viewer:', error)
+      throw error
+    }
   }
   static exportData() {
     const res = this.drawTool && this.drawTool.exportData()
@@ -131,7 +154,14 @@ export class CesiumController {
     console.log('//.///')
   }
   static mark(type: string, data?: any) {
-    this.drawTool && this.drawTool._removeAllEvent()
+    if (!this.viewer) {
+      console.error('Cesium viewer is not initialized')
+      return
+    }
+    // 清理之前的工具
+    if (this.drawTool && typeof this.drawTool._removeAllEvent === 'function') {
+      this.drawTool._removeAllEvent()
+    }
     switch (type) {
       case 'Point':
         this.drawTool = new PointTool(this.viewer)

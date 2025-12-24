@@ -18,6 +18,7 @@ import ConfigContainer from './components/ConfigContainer'
 const CesiumMap: React.FC = () => {
   const [currenModel, setCurrenModel] = useState('')
   const operationPanelRef = useRef<HTMLDivElement>(null)
+  const cesiumContainerRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(true)
   const [panelPosition, setPanelPosition] = useState({ x: 20, y: 10 })
@@ -25,6 +26,7 @@ const CesiumMap: React.FC = () => {
   const panelStartPosRef = useRef({ x: 0, y: 0 })
   const rafIdRef = useRef<number | null>(null)
   const panelSizeRef = useRef({ width: 500, height: 300 })
+  const viewerInitializedRef = useRef(false)
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed)
@@ -105,21 +107,38 @@ const CesiumMap: React.FC = () => {
   }, [isDragging])
 
   const handleSelectFlag = (item: any) => {
-    console.log('item>>>>', item)
+    console.log('handleSelectFlag called with item:', item)
+    if (!CesiumController.viewer) {
+      console.error('Cesium viewer is not initialized')
+      return
+    }
     CesiumController.mark('PointIcon', item)
   }
 
   const handleSelectAnimation = (item: any) => {
-    console.log('item>>>>', item)
+    console.log('handleSelectAnimation called with item:', item)
+    if (!CesiumController.viewer) {
+      console.error('Cesium viewer is not initialized')
+      return
+    }
     CesiumController.showSituation(item)
   }
 
   const handleSelectMark = (item: any) => {
+    console.log('handleSelectMark called with item:', item)
+    if (!CesiumController.viewer) {
+      console.error('Cesium viewer is not initialized')
+      return
+    }
     CesiumController.mark(item.key)
   }
 
   const handleSelectLocation = (item: any) => {
     console.log('handleSelectLocation called with item:', item)
+    if (!CesiumController.viewer) {
+      console.error('Cesium viewer is not initialized')
+      return
+    }
     // 位置配置映射表
     const locationConfig: Record<
       string,
@@ -152,7 +171,7 @@ const CesiumMap: React.FC = () => {
         config.explosionPosition,
       )
     } else {
-      console.warn('No config found for key:', item.key)
+      console.warn('No config found for key:', item.key, 'Available keys:', Object.keys(locationConfig))
     }
   }
 
@@ -174,12 +193,56 @@ const CesiumMap: React.FC = () => {
   }
 
   useEffect(() => {
-    CesiumController.init_world('cesiumContainer')
-    // 等待场景加载完成后再绘制中国边境线
-    const timer = setTimeout(() => {
-      CesiumController.drawChinaBorder()
-    }, 2000)
-    return () => clearTimeout(timer)
+    // 避免重复初始化
+    if (viewerInitializedRef.current) {
+      return
+    }
+    
+    // 使用 ref 或等待 DOM 渲染完成
+    const initCesium = () => {
+      const container = cesiumContainerRef.current || document.getElementById('cesiumContainer')
+      if (!container) {
+        console.error('Cesium container element not found')
+        return false
+      }
+      
+      console.log('Initializing Cesium viewer...')
+      try {
+        CesiumController.init_world('cesiumContainer')
+        
+        // 验证 viewer 是否成功初始化
+        if (!CesiumController.viewer) {
+          console.error('Failed to initialize Cesium viewer')
+          return false
+        }
+        
+        viewerInitializedRef.current = true
+        console.log('Cesium viewer initialized successfully')
+        
+        // 等待场景加载完成后再绘制中国边境线
+        setTimeout(() => {
+          CesiumController.drawChinaBorder()
+        }, 2000)
+        
+        return true
+      } catch (error) {
+        console.error('Error initializing Cesium:', error)
+        return false
+      }
+    }
+    
+    // 尝试立即初始化
+    if (!initCesium()) {
+      // 如果失败，等待下一个 tick
+      const timer = setTimeout(() => {
+        initCesium()
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+    
+    return () => {
+      // 清理工作
+    }
   }, [])
 
   return (
@@ -247,17 +310,12 @@ const CesiumMap: React.FC = () => {
         {/* 按钮区域 */}
         <div className="w-full flex justify-start items-center gap-x-[20px]">
           {BTNMap.map((item) => (
-            <div
+            <ButtonComponent
               key={item.key}
-              className="flex justify-start items-center gap-x-[10px]"
+              text={item.text}
+              currenModel={currenModel}
               onClick={() => handleClickBTN(item)}
-            >
-              <ButtonComponent
-                text={item.text}
-                currenModel={currenModel}
-                onClick={() => handleClickBTN(item)}
-              />
-            </div>
+            />
           ))}
         </div>
 
@@ -281,7 +339,7 @@ const CesiumMap: React.FC = () => {
         )}
       </div>
 
-      <div id="cesiumContainer" className="w-full h-full" />
+      <div id="cesiumContainer" ref={cesiumContainerRef} className="w-full h-full" />
 
       <style>{`
         .operation {
