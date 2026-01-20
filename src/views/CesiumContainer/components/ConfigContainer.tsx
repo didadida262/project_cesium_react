@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { CesiumController } from '../CesiumController'
 
 const ConfigContainer: React.FC = () => {
-  const [isBorderVisible, setIsBorderVisible] = useState(true)
+  const [isBorderVisible, setIsBorderVisible] = useState(false)
 
   const toggleBorder = async () => {
     setIsBorderVisible(!isBorderVisible)

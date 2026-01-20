@@ -219,10 +219,10 @@ const CesiumMap: React.FC = () => {
         viewerInitializedRef.current = true
         console.log('Cesium viewer initialized successfully')
         
-        // 等待场景加载完成后再绘制中国边境线
-        setTimeout(() => {
-          CesiumController.drawChinaBorder()
-        }, 2000)
+        // 默认不显示边境线，用户可以通过"通用配置"手动开启
+        // setTimeout(() => {
+        //   CesiumController.drawChinaBorder()
+        // }, 2000)
         
         return true
       } catch (error) {
