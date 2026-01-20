@@ -361,48 +361,6 @@ export class CesiumController {
           // 为每个实体添加可点击标识
           entity.properties = entity.properties || {}
           entity.properties.isProvinceRegion = true // 标记为省市区域
-          
-          // 通过创建多个稍微偏移的 outline 来实现加粗效果
-          // 获取原始 hierarchy
-          const originalHierarchy = entity.polygon.hierarchy.getValue()
-          
-          if (originalHierarchy && originalHierarchy.positions) {
-            const positions = originalHierarchy.positions
-            const numLayers = 5 // 创建 5 层重叠的 outline（增加层数）
-            const offsetStep = 0.0002 // 每层偏移的度数（约 22 米，增大偏移距离）
-            
-            // 为每一层创建稍微偏移的 polygon outline
-            for (let layer = 0; layer < numLayers; layer++) {
-              // 跳过中间层（原始 outline 已经存在）
-              if (layer === Math.floor(numLayers / 2)) continue
-              
-              // 计算偏移：外层向外，内层向内
-              const layerOffset = layer - Math.floor(numLayers / 2)
-              const offset = layerOffset * offsetStep
-              
-              // 计算偏移后的位置
-              const offsetPositions = positions.map((pos: Cesium.Cartesian3) => {
-                const cartographic = Cesium.Cartographic.fromCartesian(pos)
-                // 简单地向内或向外偏移
-                return Cesium.Cartesian3.fromRadians(
-                  cartographic.longitude + offset,
-                  cartographic.latitude + offset,
-                  cartographic.height,
-                )
-              })
-              
-              // 创建新的 polygon 实体用于显示加粗边框
-              this.viewer.entities.add({
-                polygon: {
-                  hierarchy: new Cesium.PolygonHierarchy(offsetPositions),
-                  fill: false,
-                  outline: true,
-                  outlineColor: Cesium.Color.BLACK,
-                  heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                },
-              })
-            }
-          }
         }
       })
       
