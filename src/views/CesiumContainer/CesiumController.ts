@@ -105,6 +105,22 @@ export class CesiumController {
       this.viewer.scene.debugShowFramesPerSecond = true;
       (window as any).viewer = this.viewer
       
+      // 初始化相机到中国全境视角（图示角度，能看到海南）
+      // 相机位置：经度 104°E（中国中心），纬度 30°N（稍微南移以确保能看到海南岛）
+      // 高度：5000000 米（5000公里），确保能看到整个中国全境包括海南
+      // 俯仰角：-78度，稍微倾斜的视角，确保能看到海南岛
+      setTimeout(() => {
+        this.viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(104.0, 30.0, 5000000),
+          orientation: {
+            heading: Cesium.Math.toRadians(0),   // 正北方向
+            pitch: Cesium.Math.toRadians(-78),   // -78度俯视角度，确保能看到海南岛
+            roll: 0.0
+          },
+          duration: 2.0  // 2秒平滑动画
+        })
+      }, 500)
+      
       console.log('Cesium viewer created successfully')
     } catch (error) {
       console.error('Error creating Cesium viewer:', error)
