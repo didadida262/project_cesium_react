@@ -115,7 +115,7 @@ export const drawPoint = (
   label: string,
   position: any,
 ) => {
-  viewer.entities.add({
+  return viewer.entities.add({
     name: label,
     position: position,
     point: {

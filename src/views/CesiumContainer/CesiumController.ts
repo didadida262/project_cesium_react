@@ -19,6 +19,7 @@ export class CesiumController {
   static chinaBorderDataSource: Cesium.GeoJsonDataSource | null = null
   static highlightedEntities: Map<Cesium.Entity, Cesium.Color> = new Map() // 存储高亮的实体及其颜色
   static clickHandler: Cesium.ScreenSpaceEventHandler | null = null // 点击事件处理器
+  static provinceNameEntities: Cesium.Entity[] = [] // 存储省份名称实体列表
   
   // 舒适的高亮配色方案（柔和的半透明颜色）
   private static readonly HIGHLIGHT_COLORS: Cesium.Color[] = [
@@ -304,11 +305,11 @@ export class CesiumController {
   }
 
   /**
-   * 绘制中国边境线
-   * 从本地 GeoData.json 文件读取数据
+   * 显示省份名称（省会城市标签）
+   * 从本地 GeoData.json 文件读取数据并显示省份名称
    * @param geoJsonUrl GeoJSON数据源的URL（可选，默认使用本地文件）
    */
-  static async drawChinaBorder(geoJsonUrl?: string) {
+  static async showProvinceNames(geoJsonUrl?: string) {
     if (!this.viewer) return
 
     // 使用本地 GeoData.json 文件
@@ -316,7 +317,7 @@ export class CesiumController {
     const url = geoJsonUrl || defaultGeoJsonUrl
 
     try {
-      // 先直接加载原始GeoJSON数据，提取省会信息
+      // 直接加载原始GeoJSON数据，提取省会信息
       const response = await fetch(url)
       const geoJsonData = await response.json()
       
@@ -339,14 +340,80 @@ export class CesiumController {
               const capitalPosition = Cesium.Cartesian3.fromDegrees(longitude, latitude)
               // 获取省会城市名称，如果映射表中没有则使用省份名称
               const capitalName = this.provinceToCapitalMap[name] || name
-              drawPoint(this.viewer, capitalName, capitalPosition)
+              const entity = drawPoint(this.viewer, capitalName, capitalPosition)
+              // 存储实体引用以便后续删除
+              if (entity) {
+                this.provinceNameEntities.push(entity)
+              }
               console.log(`标记省会: ${capitalName} (${longitude}, ${latitude})`)
             }
           }
         })
       }
       
-      // 然后加载GeoJSON数据到Cesium，使用默认样式
+      console.log('省份名称已显示')
+    } catch (error) {
+      console.error('加载省份名称失败:', error)
+      throw error
+    }
+  }
+
+  /**
+   * 移除省份名称（省会城市标签）
+   */
+  static removeProvinceNames() {
+    if (!this.viewer) return
+
+    // 删除所有省份名称实体
+    this.provinceNameEntities.forEach((entity) => {
+      this.viewer.entities.remove(entity)
+    })
+    this.provinceNameEntities = []
+    
+    console.log('省份名称已移除')
+  }
+
+  /**
+   * 切换省份名称的显示/隐藏
+   */
+  static async toggleProvinceNames(show: boolean) {
+    if (!this.viewer) return
+    
+    if (show) {
+      // 如果开启且省份名称不存在，则重新加载
+      if (this.provinceNameEntities.length === 0) {
+        await this.showProvinceNames()
+      } else {
+        // 如果已存在，则显示所有实体
+        this.provinceNameEntities.forEach((entity) => {
+          entity.show = true
+        })
+      }
+    } else {
+      // 如果关闭，则隐藏所有实体（不删除，以便后续重新显示）
+      this.provinceNameEntities.forEach((entity) => {
+        entity.show = false
+      })
+    }
+  }
+
+  /**
+   * 绘制中国边境线
+   * 从本地 GeoData.json 文件读取数据
+   * @param geoJsonUrl GeoJSON数据源的URL（可选，默认使用本地文件）
+   */
+  static async drawChinaBorder(geoJsonUrl?: string) {
+    if (!this.viewer) return
+
+    // 使用本地 GeoData.json 文件
+    const defaultGeoJsonUrl = '/GeoData.json'
+    const url = geoJsonUrl || defaultGeoJsonUrl
+
+    try {
+      // 如果省份名称还没有显示，先显示省份名称
+      // 注意：这里不重复显示，因为 showProvinceNames 已经在初始化时调用
+      
+      // 加载GeoJSON数据到Cesium，使用默认样式
       const geoJsonDataSource = await Cesium.GeoJsonDataSource.load(url)
       
       // 取消填充色，使用多个重叠的 outline 实现加粗边框效果
